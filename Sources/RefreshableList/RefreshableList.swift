@@ -58,7 +58,10 @@ public struct RefreshableList<Content: View>: View {
             
             // 6 is the list top padding
             self.scrollOffset  = movingBounds.minY - fixedBounds.minY - 6
-            guard self.scrollOffset > 0 else { return }
+            print(self.scrollOffset)
+            print(self.previousScrollOffset)
+            guard self.scrollOffset - self.previousScrollOffset < 20 else { return }
+            
             self.pullStatus = self.scrollOffset / 100
             
             // Crossing the threshold on the way down, we start the refresh process
