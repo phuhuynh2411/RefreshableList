@@ -88,17 +88,20 @@ struct Spinner: View {
     @Binding var percentage: CGFloat
     var body: some View {
         GeometryReader { proxy in
-            ZStack {
-                ForEach(1...12, id: \.self) { i in
-                    Rectangle()
-                        .fill(Color.gray)
-                        .cornerRadius(1)
-                        .frame(width: proxy.frame(in: .local).width/12, height: proxy.frame(in: .local).height/4)
-                        .opacity(self.percentage * 12 >= CGFloat(i) ? Double(i)/12 : 0)
-                        .offset(y: -proxy.frame(in: .local).width/3)
-                        .rotationEffect(.degrees(Double(30 * i)), anchor: .center)
+            if self.percentage > 0 {
+                ZStack {
+                    ForEach(1...12, id: \.self) { i in
+                        Rectangle()
+                            .fill(Color.gray)
+                            .cornerRadius(1)
+                            .frame(width: proxy.frame(in: .local).width/12, height: proxy.frame(in: .local).height/4)
+                            .opacity(self.percentage * 12 >= CGFloat(i) ? Double(i)/12 : 0)
+                            .offset(y: -proxy.frame(in: .local).width/3)
+                            .rotationEffect(.degrees(Double(30 * i)), anchor: .center)
+                    }
                 }
             }
+            
         }.frame(width: 40, height: 40)
     }
 }
@@ -111,7 +114,6 @@ struct RefreshView: View {
         ZStack{
             if !isRefreshing {
                 Spinner(percentage: $status)
-                    .opacity(self.status > 0 ? 1 : 0)
             }
             ActivityIndicator(isAnimating: .constant(true), style: .large)
                 .scaleEffect(self.isRefreshing ? 1 : 0.1)
