@@ -1,12 +1,15 @@
 # RefreshableList
-
-A refreshable List. Perfroming an action when scrolling to the last row.
+A refreshable List. Performing an action when scrolling to the last row.
+![Pull to refresh](pull_to_refresh.gif)
 
 ## Installation
+In XCode, go to `File -> Swift Packages -> Add Package Dependency`, and add the following url.
+https://github.com/phuhuynh2411/RefreshableList.git
 
 ## Usage
 Supports two main functions
-onRefreshPerform: perfom an action 
+- onRefreshPerform: performs an action when pulling the list down and releases.
+- onLastPerform: performs an action when scrolling to the last row.
 
 ```swift
 struct ContentView: View {
