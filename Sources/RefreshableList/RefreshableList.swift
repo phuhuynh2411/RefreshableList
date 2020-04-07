@@ -109,7 +109,7 @@ struct RefreshView: View {
     @State var scale: CGFloat = 1.0
     var body: some View {
         ZStack{
-            if (!isRefreshing) {
+            if !isRefreshing && self.status > 0 {
                 Spinner(percentage: $status)
             }
             ActivityIndicator(isAnimating: .constant(true), style: .large)
