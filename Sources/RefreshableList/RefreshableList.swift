@@ -58,6 +58,7 @@ public struct RefreshableList<Content: View>: View {
             
             // 6 is the list top padding
             self.scrollOffset  = movingBounds.minY - fixedBounds.minY - 6
+            guard self.scrollOffset > 0 else { return }
             self.pullStatus = self.scrollOffset / 100
             
             // Crossing the threshold on the way down, we start the refresh process
@@ -110,9 +111,7 @@ struct RefreshView: View {
     var body: some View {
         ZStack{
             if !isRefreshing {
-                withAnimation(Animation.default.delay(1)) {
-                     Spinner(percentage: $status)
-                }
+                Spinner(percentage: $status)
             }
             ActivityIndicator(isAnimating: .constant(true), style: .large)
                 .scaleEffect(self.isRefreshing ? 1 : 0.1)
