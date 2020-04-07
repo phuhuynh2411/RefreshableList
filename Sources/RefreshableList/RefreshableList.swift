@@ -110,12 +110,14 @@ struct RefreshView: View {
     var body: some View {
         ZStack{
             if !isRefreshing {
-                Spinner(percentage: $status)
+                withAnimation(Animation.default.delay(1)) {
+                     Spinner(percentage: $status)
+                }
             }
-//            ActivityIndicator(isAnimating: .constant(true), style: .large)
-//                .scaleEffect(self.isRefreshing ? 1 : 0.1)
-//                .opacity(self.isRefreshing ? 1 : 0)
-//                .animation(self.isRefreshing ? nil : .easeInOut)
+            ActivityIndicator(isAnimating: .constant(true), style: .large)
+                .scaleEffect(self.isRefreshing ? 1 : 0.1)
+                .opacity(self.isRefreshing ? 1 : 0)
+                .animation(self.isRefreshing ? nil : .easeInOut)
         }
     }
 }
