@@ -60,7 +60,7 @@ public struct RefreshableList<Content: View>: View {
             self.scrollOffset  = movingBounds.minY - fixedBounds.minY - 6
             print(self.scrollOffset)
             print(self.previousScrollOffset)
-            guard self.scrollOffset > 0, self.scrollOffset - self.previousScrollOffset < 20 else { return }
+            guard self.scrollOffset > 0, self.scrollOffset - self.previousScrollOffset < 40 else { return }
             
             self.pullStatus = self.scrollOffset / 100
             
