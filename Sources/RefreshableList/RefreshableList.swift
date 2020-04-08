@@ -58,8 +58,7 @@ public struct RefreshableList<Content: View>: View {
             
             // 6 is the list top padding
             self.scrollOffset  = movingBounds.minY - fixedBounds.minY - 6
-            print(self.scrollOffset)
-            print(self.previousScrollOffset)
+            // Prevents if the pulling speed is too fast.
             guard self.scrollOffset > 0, self.scrollOffset - self.previousScrollOffset < 40 else { return }
             
             self.pullStatus = self.scrollOffset / 100
