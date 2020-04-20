@@ -11,6 +11,7 @@ public struct RefreshableList<Content: View>: View {
     @State private var scrollOffset: CGFloat = 0
     @State private var frozen: Bool = false
     var action: Action = Action()
+    @State private var ready: Bool = false
     
     public init(showRefreshView: Binding<Bool>, displayMode: NavigationDisplayMode = .inline, @ViewBuilder content: @escaping () -> Content) {
         self._showRefreshView = showRefreshView
@@ -43,9 +44,15 @@ public struct RefreshableList<Content: View>: View {
             .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
                 self.refreshLogic(values: values)
             }
-            PullToRefreshView(showRefreshView: $showRefreshView, pullStatus: $pullStatus)
-                .offset(y: self.displayMode == .large ? -90 : 0)
-                .frame(height: self.scrollOffset > 0 || self.showRefreshView ? 60 : 0)
+            .onAppear {
+                self.ready = true
+            }
+            
+            if self.ready {
+                PullToRefreshView(showRefreshView: $showRefreshView, pullStatus: $pullStatus)
+                    .offset(y: self.displayMode == .large ? -90 : 0)
+                    .frame(height: self.scrollOffset > 0 || self.showRefreshView ? 60 : 0)
+            }
         }
             
     }
@@ -58,9 +65,6 @@ public struct RefreshableList<Content: View>: View {
             
             // 6 is the list top padding
             self.scrollOffset  = movingBounds.minY - fixedBounds.minY - 6
-            // Prevents if the pulling speed is too fast.
-            guard self.scrollOffset > 0, self.scrollOffset - self.previousScrollOffset < 40 else { return }
-            
             self.pullStatus = self.scrollOffset / 100
             
             // Crossing the threshold on the way down, we start the refresh process
@@ -112,8 +116,10 @@ struct RefreshView: View {
     @State var scale: CGFloat = 1.0
     var body: some View {
         ZStack{
-            if !isRefreshing {
-                Spinner(percentage: $status)
+            if (!isRefreshing) {
+                withAnimation(Animation.default.delay(1)) {
+                     Spinner(percentage: $status)
+                }
             }
             ActivityIndicator(isAnimating: .constant(true), style: .large)
                 .scaleEffect(self.isRefreshing ? 1 : 0.1)
