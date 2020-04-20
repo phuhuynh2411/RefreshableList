@@ -11,7 +11,7 @@ public struct RefreshableList<Content: View>: View {
     @State private var scrollOffset: CGFloat = 0
     @State private var frozen: Bool = false
     var action: Action = Action()
-    @State private var ready: Bool = false
+    @State private var onDrag: Bool = false
     
     public init(showRefreshView: Binding<Bool>, displayMode: NavigationDisplayMode = .inline, @ViewBuilder content: @escaping () -> Content) {
         self._showRefreshView = showRefreshView
@@ -24,13 +24,12 @@ public struct RefreshableList<Content: View>: View {
     public var body: some View {
        
         ZStack(alignment: .top) {
-            List{
+            List {
                 MovingView()
                 if self.showRefreshView && self.frozen && self.displayMode == .inline {
                     EmptyRow()
                 }
                 content()
-                
                 Color
                     .clear
                     .frame(height: 0)
@@ -44,21 +43,23 @@ public struct RefreshableList<Content: View>: View {
             .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
                 self.refreshLogic(values: values)
             }
-            .onAppear {
-                self.ready = true
-            }
+            .gesture(
+                DragGesture()
+                    .onChanged({ (value) in
+                        self.onDrag = true
+                    })
+            )
             
-            if self.ready {
-                PullToRefreshView(showRefreshView: $showRefreshView, pullStatus: $pullStatus)
-                    .offset(y: self.displayMode == .large ? -90 : 0)
-                    .frame(height: self.scrollOffset > 0 || self.showRefreshView ? 60 : 0)
-            }
+            PullToRefreshView(showRefreshView: $showRefreshView, pullStatus: $pullStatus)
+                .offset(y: self.displayMode == .large ? -90 : 0)
+                .frame(height: self.scrollOffset > 0 || self.showRefreshView ? 60 : 0)
         }
-            
     }
     
     func refreshLogic(values: [RefreshableKeyTypes.PrefData]) {
         DispatchQueue.main.async {
+            guard self.onDrag else { return }
+            
             // Calculate scroll offset
             let movingBounds = values.first { $0.vType == .movingView }?.bounds ?? .zero
             let fixedBounds = values.first { $0.vType == .fixedView }?.bounds ?? .zero
@@ -72,6 +73,8 @@ public struct RefreshableList<Content: View>: View {
                 self.showRefreshView = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     self.action.onRefresh?()
+                    self.onDrag = false
+                    self.pullStatus = 0.0
                 }
             }
             
