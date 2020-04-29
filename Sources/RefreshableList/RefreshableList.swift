@@ -51,7 +51,7 @@ public struct RefreshableList<Content: View>: View {
             )
             
             PullToRefreshView(showRefreshView: $showRefreshView, pullStatus: $pullStatus)
-                .offset(y: self.displayMode == .large ? -90 : 0)
+                .offset(y: self.displayMode == .large ? (self.showRefreshView ? -90 : 0) : 0)
                 .frame(height: self.scrollOffset > 0 || self.showRefreshView ? 60 : 0)
         }
     }
